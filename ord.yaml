@@ -1,23 +1,23 @@
 # example config
 
 # see `ord --help` for setting documentation
-
-bitcoin_data_dir: /var/lib/bitcoin
+#RUST_LOG=debug ./ord_16 --index-runes -r --bitcoin-rpc-url=http://127.0.0.1:8332 --bitcoin-rpc-username=foo --bitcoin-rpc-password=bar wallet --server-url http://127.0.0.1:8881 etch --divisibility 10 --fee-rate 1 --rune "CASEY•RUNES•EVERYTHING" --supply 21000000 --symbol ₿
+#bitcoin_data_dir: /var/lib/bitcoin
 bitcoin_rpc_password: bar
-bitcoin_rpc_url: https://localhost:8000
+bitcoin_rpc_url: http://34.143.155.8:8332
 bitcoin_rpc_username: foo
-chain: mainnet
+chain: regtest
 commit_interval: 10000
-config: /var/lib/ord/ord.yaml
-config_dir: /var/lib/ord
-cookie_file: /var/lib/bitcoin/.cookie
-data_dir: /var/lib/ord
+config: ./ord.yaml
+config_dir: ./
+cookie_file: ./.cookie
+data_dir: ./ord
 first_inscription_height: 100
 height_limit: 1000
 hidden:
-- 6fb976ab49dcec017f1e201e84395983204ae1a7c2abf7ced0a85d692e442799i0
-- 703e5f7c49d82aab99e605af306b9a30e991e57d42f982908a962a81ac439832i0
-index: /var/lib/ord/index.redb
+  - 6fb976ab49dcec017f1e201e84395983204ae1a7c2abf7ced0a85d692e442799i0
+  - 703e5f7c49d82aab99e605af306b9a30e991e57d42f982908a962a81ac439832i0
+index: ./ord/index.redb
 index_cache_size: 1000000000
 index_runes: true
 index_sats: true

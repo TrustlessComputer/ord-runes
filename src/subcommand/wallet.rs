@@ -21,6 +21,7 @@ pub mod sats;
 pub mod send;
 mod shared_args;
 pub mod transactions;
+pub mod etch;
 
 #[derive(Debug, Parser)]
 pub(crate) struct WalletCommand {
@@ -52,6 +53,8 @@ pub(crate) enum Subcommand {
   Inscribe(inscribe::Inscribe),
   #[command(about = "List wallet inscriptions")]
   Inscriptions,
+  #[command(about = "Create rune")]
+  Etch(etch::Etch),
   #[command(about = "Mint a rune")]
   Mint(mint::Mint),
   #[command(about = "Generate receive address")]
@@ -100,6 +103,7 @@ impl WalletCommand {
       Subcommand::Dump => dump::run(wallet),
       Subcommand::Inscribe(inscribe) => inscribe.run(wallet),
       Subcommand::Inscriptions => inscriptions::run(wallet),
+      Subcommand::Etch(etch) => etch.run(wallet),
       Subcommand::Mint(mint) => mint.run(wallet),
       Subcommand::Receive(receive) => receive.run(wallet),
       Subcommand::Resume => resume::run(wallet),
