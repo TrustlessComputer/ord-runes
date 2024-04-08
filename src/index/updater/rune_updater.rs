@@ -396,10 +396,10 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       // was actually a taproot output. this is checked below, when we load the
       // output's entry from the database
       println!("input {:?},tapscript {:?}",input,input.witness.tapscript());
-      /*let Some(tapscript) = input.witness.tapscript() else {
+      let Some(tapscript) = input.witness.tapscript() else {
         continue;
-      };*/
-      let Some(tapscript) = input.witness.tapscript()
+      };
+
       for instruction in tapscript.instructions() {
         // ignore errors, since the extracted script may not be valid
         let Ok(instruction) = instruction else {
