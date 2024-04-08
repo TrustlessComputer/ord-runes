@@ -328,6 +328,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
     };
 
     let rune = if let Some(rune) = rune {
+      println!("etched: rune {:?},minimum {:?},is_reserved {:?} ,rune_to_id_0 {:?}, tx_commits_to_rune {:?}", rune,self.minimum,rune.is_reserved(),self.rune_to_id,!self.tx_commits_to_rune(tx, rune));
       if rune < self.minimum
         || rune.is_reserved()
         || self.rune_to_id.get(rune.0)?.is_some()
