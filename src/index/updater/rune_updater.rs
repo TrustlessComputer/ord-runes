@@ -19,18 +19,18 @@ pub(super) struct RuneUpdater<'a, 'tx, 'client> {
 impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
   pub(super) fn index_runes(&mut self, tx_index: u32, tx: &Transaction, txid: Txid) -> Result<()> {
     let artifact = Runestone::decipher(tx);
-    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
       println!("artifact: {:?}", artifact);
     }
   /*
   //index_runes Backtrace [{ fn: "ord::index::updater::rune_updater::RuneUpdater::index_runes" }, { fn: "ord::index::updater::Updater::index_block" }, { fn: "ord::index::Index::update" }, { fn: "std::sys_common::backtrace::__rust_begin_short_backtrace" }, { fn: "core::ops::function::FnOnce::call_once{{vtable.shim}}" }, { fn: "std::sys::pal::unix::thread::Thread::new::thread_start" }, { fn: "start_thread" }, { fn: "clone" }]
   */
     let mut unallocated = self.unallocated(tx)?;
-    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
       println!("unallocated: {:?}", unallocated);
     }
     let mut allocated: Vec<HashMap<RuneId, Lot>> = vec![HashMap::new(); tx.output.len()];
-    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
       println!("allocated: {:?}", allocated);
     }
     if let Some(artifact) = &artifact {
@@ -41,7 +41,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       }
 
       let etched = self.etched(tx_index, tx, artifact)?;
-      if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+      if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
         println!("etched: {:?}", etched);
       }
       if let Artifact::Runestone(runestone) = artifact {
@@ -195,7 +195,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
         Index::encode_rune_balance(id, balance.n(), &mut buffer);
       }
 
-      if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+      if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
         println!("outpoint_to_balances: txid {:?} , vout {:?}  ", txid,vout);
       }
 
@@ -212,7 +212,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
     // increment entries with burned runes
     for (id, amount) in burned {
       *self.burned.entry(id).or_default() += amount;
-      if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+      if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
         println!("burned: id {:?} , amount {:?}  ", id,amount);
       }
     }
@@ -396,7 +396,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       // was actually a taproot output. this is checked below, when we load the
       // output's entry from the database
       println!("input {:?},tapscript {:?}",input,input.witness.tapscript());
-      
+
         let Some(tx_info) = self
           .client
           .get_raw_transaction_info(&input.previous_output.txid, None)
