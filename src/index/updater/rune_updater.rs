@@ -1,4 +1,3 @@
-use std::backtrace::Backtrace;
 use super::*;
 
 pub(super) struct RuneUpdater<'a, 'tx, 'client> {
@@ -20,7 +19,6 @@ pub(super) struct RuneUpdater<'a, 'tx, 'client> {
 impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
   pub(super) fn index_runes(&mut self, tx_index: u32, tx: &Transaction, txid: Txid) -> Result<()> {
     let artifact = Runestone::decipher(tx);
-    let backtrace = Backtrace::capture();
     if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
       println!("artifact: {:?}", artifact);
     }
@@ -214,11 +212,12 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
     // increment entries with burned runes
     for (id, amount) in burned {
       *self.burned.entry(id).or_default() += amount;
+      if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+        println!("burned: id {:?} , amount {:?}  ", id,amount);
+      }
     }
 
-    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
-      println!("burned: txid {:?} , burend {:?}  ", txid,burned);
-    }
+
 
     Ok(())
   }
