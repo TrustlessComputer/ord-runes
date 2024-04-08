@@ -178,7 +178,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
     }
 
     if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
-      println!("burned: {:?}", *burned);
+      println!("burned: {:?}", burned);
     }
 
     // update outpoint balances
