@@ -409,34 +409,52 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
   }
 
   fn tx_commits_to_rune(&self, tx: &Transaction, rune: Rune) -> Result<bool> {
-    let _commitment = rune.commitment();
+    let commitment = rune.commitment();
 
     for input in &tx.input {
       // extracting a tapscript does not indicate that the input being spent
       // was actually a taproot output. this is checked below, when we load the
       // output's entry from the database
-        let Some(tx_info) = self
-          .client
-          .get_raw_transaction_info(&input.previous_output.txid, None)
-          .into_option()?
-        else {
-          panic!("input not in UTXO set: {}", input.previous_output);
+      let Some(tapscript) = input.witness.tapscript() else {
+        continue;
+      };
+
+      for instruction in tapscript.instructions() {
+        // ignore errors, since the extracted script may not be valid
+        let Ok(instruction) = instruction else {
+          break;
         };
 
+        let Some(pushbytes) = instruction.push_bytes() else {
+          continue;
+        };
+
+        if pushbytes.as_bytes() != commitment {
+          continue;
+        }
+
+        let Some(tx_info) = self
+            .client
+            .get_raw_transaction_info(&input.previous_output.txid, None)
+            .into_option()?
+            else {
+              panic!("input not in UTXO set: {}", input.previous_output);
+            };
+
         let taproot = tx_info.vout[input.previous_output.vout.into_usize()]
-          .script_pub_key
-          .script()?
-          .is_v1_p2tr();
+            .script_pub_key
+            .script()?
+            .is_v1_p2tr();
 
         let mature = tx_info
-          .confirmations
-          .map(|confirmations| confirmations >= Runestone::COMMIT_INTERVAL.into())
-          .unwrap_or_default();
+            .confirmations
+            .map(|confirmations| confirmations >= Runestone::COMMIT_INTERVAL.into())
+            .unwrap_or_default();
 
         if taproot && mature {
           return Ok(true);
         }
-
+      }
     }
 
     Ok(false)

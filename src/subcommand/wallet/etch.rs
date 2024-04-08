@@ -100,11 +100,18 @@ impl Etch {
       "runestone greater than maximum OP_RETURN size: {} > 82",
       script_pubkey.len()
     );
-
+    let commitment = rune.commitment();
+    let mut txIn =TxIn{
+      previous_output: Default::default(),
+      script_sig: Default::default(),
+      sequence: Default::default(),
+      witness:Witness::new(),
+    };
+    txIn.witness.push(commitment);
     let unfunded_transaction = Transaction {
       version: 2,
       lock_time: LockTime::ZERO,
-      input: Vec::new(),
+      input: vec![txIn,],
       output: vec![
         TxOut {
           script_pubkey,
@@ -116,7 +123,6 @@ impl Etch {
         },
       ],
     };
-
     let inscriptions = wallet
       .inscriptions()
       .keys()
