@@ -37,6 +37,9 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       if let Some(id) = artifact.mint() {
         if let Some(amount) = self.mint(id)? {
           *unallocated.entry(id).or_default() += amount;
+          if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+            println!("unallocated 1 {:?} => {:?}", id, amount);
+          }
         }
       }
 
@@ -48,6 +51,9 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
         if let Some((id, ..)) = etched {
           *unallocated.entry(id).or_default() +=
             runestone.etching.unwrap().premine.unwrap_or_default();
+          if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+            println!("unallocated 2 {:?} ", id);
+          }
         }
 
         for Edict { id, amount, output } in runestone.edicts.iter().copied() {
@@ -76,6 +82,10 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
             if amount > 0 {
               *balance -= amount;
               *allocated[output].entry(id).or_default() += amount;
+
+              if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+                println!("allocated 1 {:?} => {:?}", id, amount);
+              }
             }
           };
 
@@ -132,6 +142,9 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
     if let Some(Artifact::Cenotaph(_)) = artifact {
       for (id, balance) in unallocated {
         *burned.entry(id).or_default() += balance;
+        if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+          println!("burned 1 {:?} => {:?}", id, balance);
+        }
       }
     } else {
       let pointer = artifact
@@ -158,27 +171,21 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
         for (id, balance) in unallocated {
           if balance > 0 {
             *allocated[vout].entry(id).or_default() += balance;
+            if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+              println!("allocated 2  {:?} => {:?}", id, balance);
+            }
           }
         }
       } else {
         for (id, balance) in unallocated {
           if balance > 0 {
             *burned.entry(id).or_default() += balance;
+            if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+                println!("burned 2 {:?} => {:?}", id, balance);
+            }
           }
         }
       }
-    }
-
-    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
-      println!("unallocated: {:?}", unallocated);
-    }
-
-    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
-      println!("allocated: {:?}", allocated);
-    }
-
-    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
-      println!("burned: {:?}", burned);
     }
 
     // update outpoint balances
@@ -192,6 +199,9 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       if tx.output[vout].script_pubkey.is_op_return() {
         for (id, balance) in &balances {
           *burned.entry(*id).or_default() += *balance;
+          if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+            println!("burned 3 {:?} => {:?}", id, balance);
+          }
         }
         continue;
       }
@@ -225,7 +235,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
     for (id, amount) in burned {
       *self.burned.entry(id).or_default() += amount;
       if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
-        println!("burned: id {:?} , amount {:?}  ", id,amount);
+        println!("burned 4 : id {:?} , amount {:?}  ", id,amount);
       }
     }
 
@@ -397,7 +407,8 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
   }
 
   fn tx_commits_to_rune(&self, tx: &Transaction, rune: Rune) -> Result<bool> {
-    let commitment = rune.commitment();
+    let _commitment = rune.commitment();
+
     for input in &tx.input {
       // extracting a tapscript does not indicate that the input being spent
       // was actually a taproot output. this is checked below, when we load the
