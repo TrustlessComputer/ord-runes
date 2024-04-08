@@ -133,7 +133,9 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
 
       if let Some((id, rune)) = etched {
         self.create_rune_entry(txid, artifact, id, rune)?;
-        println!("create_rune_entry: artifact {:?} , id {:?} , rune {:?} ", artifact,id,rune);
+        if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+          println!("create_rune_entry: artifact {:?} , id {:?} , rune {:?} ", artifact, id, rune);
+        }
       }
     }
 
