@@ -1,3 +1,4 @@
+use std::backtrace::Backtrace;
 use super::*;
 
 pub(super) struct RuneUpdater<'a, 'tx, 'client> {
@@ -19,11 +20,21 @@ pub(super) struct RuneUpdater<'a, 'tx, 'client> {
 impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
   pub(super) fn index_runes(&mut self, tx_index: u32, tx: &Transaction, txid: Txid) -> Result<()> {
     let artifact = Runestone::decipher(tx);
-
+    let backtrace = Backtrace::capture();
+    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+      println!("artifact: {:?}", artifact);
+    }
+  /*
+  //index_runes Backtrace [{ fn: "ord::index::updater::rune_updater::RuneUpdater::index_runes" }, { fn: "ord::index::updater::Updater::index_block" }, { fn: "ord::index::Index::update" }, { fn: "std::sys_common::backtrace::__rust_begin_short_backtrace" }, { fn: "core::ops::function::FnOnce::call_once{{vtable.shim}}" }, { fn: "std::sys::pal::unix::thread::Thread::new::thread_start" }, { fn: "start_thread" }, { fn: "clone" }]
+  */
     let mut unallocated = self.unallocated(tx)?;
-
+    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+      println!("unallocated: {:?}", unallocated);
+    }
     let mut allocated: Vec<HashMap<RuneId, Lot>> = vec![HashMap::new(); tx.output.len()];
-
+    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+      println!("allocated: {:?}", allocated);
+    }
     if let Some(artifact) = &artifact {
       if let Some(id) = artifact.mint() {
         if let Some(amount) = self.mint(id)? {
@@ -32,7 +43,9 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       }
 
       let etched = self.etched(tx_index, tx, artifact)?;
-
+      if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+        println!("etched: {:?}", etched);
+      }
       if let Artifact::Runestone(runestone) = artifact {
         if let Some((id, ..)) = etched {
           *unallocated.entry(id).or_default() +=
@@ -112,6 +125,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
 
       if let Some((id, rune)) = etched {
         self.create_rune_entry(txid, artifact, id, rune)?;
+        println!("create_rune_entry: artifact {:?} , id {:?} , rune {:?} ", artifact,id,rune);
       }
     }
 
@@ -183,6 +197,10 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
         Index::encode_rune_balance(id, balance.n(), &mut buffer);
       }
 
+      if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+        println!("outpoint_to_balances: txid {:?} , vout {:?}  ", txid,vout);
+      }
+
       self.outpoint_to_balances.insert(
         &OutPoint {
           txid,
@@ -196,6 +214,10 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
     // increment entries with burned runes
     for (id, amount) in burned {
       *self.burned.entry(id).or_default() += amount;
+    }
+
+    if txid.to_string() == "b97e27eacbf9c53bc253e3aba82a34fe0c8e580e0da3aa0fe25f668b15edd0e3" {
+      println!("burned: txid {:?} , burend {:?}  ", txid,burned);
     }
 
     Ok(())
