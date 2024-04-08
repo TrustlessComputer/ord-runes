@@ -169,6 +169,18 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       }
     }
 
+    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+      println!("unallocated: {:?}", unallocated);
+    }
+
+    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+      println!("allocated: {:?}", allocated);
+    }
+
+    if txid.to_string() == "ccf4bb94c58e5c3f4df97183f6857b05211834dbceb0e8a5e9d8cbc97758fd0c" {
+      println!("burned: {:?}", *burned);
+    }
+
     // update outpoint balances
     let mut buffer: Vec<u8> = Vec::new();
     for (vout, balances) in allocated.into_iter().enumerate() {
@@ -327,19 +339,15 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       },
     };
     let rune = if let Some(rune) = rune {
-      println!("etched: rune {:?},minimum {:?}",rune,self.minimum);
       if rune < self.minimum {
         return Ok(None);
       }
-      println!( "is_reserved {:?}",rune.is_reserved());
       if rune.is_reserved() {
         return Ok(None);
       }
-      println!("rune_to_id_0 {:?}",self.rune_to_id);
       if self.rune_to_id.get(rune.0)?.is_some() {
         return Ok(None);
       }
-      println!("tx_commits_to_rune {:?}", self.tx_commits_to_rune(tx, rune));
       if !self.tx_commits_to_rune(tx, rune)?
       {
         return Ok(None);
@@ -390,13 +398,10 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
 
   fn tx_commits_to_rune(&self, tx: &Transaction, rune: Rune) -> Result<bool> {
     let commitment = rune.commitment();
-    println!("commitment {:?}",commitment);
     for input in &tx.input {
       // extracting a tapscript does not indicate that the input being spent
       // was actually a taproot output. this is checked below, when we load the
       // output's entry from the database
-      println!("input {:?},tapscript {:?}",input,input.witness.tapscript());
-
         let Some(tx_info) = self
           .client
           .get_raw_transaction_info(&input.previous_output.txid, None)
@@ -415,7 +420,6 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
           .map(|confirmations| confirmations >= Runestone::COMMIT_INTERVAL.into())
           .unwrap_or_default();
 
-        println!("instruction taproot {:?},mature {:?}",taproot,mature);
         if taproot && mature {
           return Ok(true);
         }
