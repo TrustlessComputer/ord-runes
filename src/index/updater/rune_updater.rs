@@ -396,24 +396,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
       // was actually a taproot output. this is checked below, when we load the
       // output's entry from the database
       println!("input {:?},tapscript {:?}",input,input.witness.tapscript());
-      let Some(tapscript) = input.witness.tapscript() else {
-        continue;
-      };
-
-      for instruction in tapscript.instructions() {
-        // ignore errors, since the extracted script may not be valid
-        let Ok(instruction) = instruction else {
-          break;
-        };
-
-        let Some(pushbytes) = instruction.push_bytes() else {
-          continue;
-        };
-
-        if pushbytes.as_bytes() != commitment {
-          continue;
-        }
-
+      
         let Some(tx_info) = self
           .client
           .get_raw_transaction_info(&input.previous_output.txid, None)
@@ -436,7 +419,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
         if taproot && mature {
           return Ok(true);
         }
-      }
+
     }
 
     Ok(false)
