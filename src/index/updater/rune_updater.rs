@@ -326,13 +326,21 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
         None => return Ok(None),
       },
     };
-
     let rune = if let Some(rune) = rune {
-      println!("etched: rune {:?},minimum {:?},is_reserved {:?} ,rune_to_id_0 {:?}, tx_commits_to_rune {:?}", rune,self.minimum,rune.is_reserved(),self.rune_to_id,self.tx_commits_to_rune(tx, rune));
-      if rune < self.minimum
-        || rune.is_reserved()
-        || self.rune_to_id.get(rune.0)?.is_some()
-        || !self.tx_commits_to_rune(tx, rune)?
+      println!("etched: rune {:?},minimum {:?}",rune,self.minimum);
+      if rune < self.minimum {
+        return Ok(None);
+      }
+      println!( "is_reserved {:?}",rune.is_reserved());
+      if rune.is_reserved() {
+        return Ok(None);
+      }
+      println!("rune_to_id_0 {:?}",self.rune_to_id);
+      if self.rune_to_id.get(rune.0)?.is_some() {
+        return Ok(None);
+      }
+      println!("tx_commits_to_rune {:?}", self.tx_commits_to_rune(tx, rune));
+      if !self.tx_commits_to_rune(tx, rune)?
       {
         return Ok(None);
       }
@@ -382,7 +390,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
 
   fn tx_commits_to_rune(&self, tx: &Transaction, rune: Rune) -> Result<bool> {
     let commitment = rune.commitment();
-
+    println!("commitment {:?}",commitment);
     for input in &tx.input {
       // extracting a tapscript does not indicate that the input being spent
       // was actually a taproot output. this is checked below, when we load the
@@ -423,6 +431,7 @@ impl<'a, 'tx, 'client> RuneUpdater<'a, 'tx, 'client> {
           .map(|confirmations| confirmations >= Runestone::COMMIT_INTERVAL.into())
           .unwrap_or_default();
 
+        println!("instruction taproot {:?},mature {:?}",taproot,mature);
         if taproot && mature {
           return Ok(true);
         }
