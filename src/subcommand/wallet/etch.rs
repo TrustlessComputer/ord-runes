@@ -101,8 +101,9 @@ impl Etch {
       script_pubkey.len()
     );
     let commitment = rune.commitment();
+
     let mut txIn =TxIn{
-      previous_output: Default::default(),
+      previous_output: OutPoint::null(),
       script_sig: Default::default(),
       sequence: Default::default(),
       witness:Witness::new(),
