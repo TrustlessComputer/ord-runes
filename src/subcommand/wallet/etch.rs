@@ -70,7 +70,7 @@ impl Etch {
     );
 
     let destination = wallet.get_change_address()?;
-
+    println!("commitment {:?}",rune.commitment());
     let runestone = Runestone {
       etching: Some(Etching {
         divisibility: Some(self.divisibility),
