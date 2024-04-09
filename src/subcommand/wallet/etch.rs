@@ -1,5 +1,6 @@
 use super::*;
-
+use reqwest;
+use serde_json::from_str;
 #[derive(Debug, Parser)]
 pub(crate) struct Etch {
   #[clap(long, help = "Set divisibility to <DIVISIBILITY>.")]
@@ -34,8 +35,14 @@ pub struct Output {
   pub transaction: Txid,
 }
 
+#[derive(Debug, Deserialize, Serialize)]
+struct ResponseData {
+  tx_id: String,
+  vout: u32,
+}
+
 impl Etch {
-  pub(crate) fn run(self, wallet: Wallet) -> SubcommandResult {
+  pub(crate) async fn run(self, wallet: Wallet) -> SubcommandResult {
     ensure!(
       wallet.has_rune_index(),
       "`ord wallet etch` requires index created with `--index-runes` flag",
@@ -102,8 +109,22 @@ impl Etch {
     );
     let commitment = rune.commitment();
 
+    let response = reqwest::get("https://example.com")
+        .await?
+        .text()
+        .await?;
+
+    let parsed: ResponseData = match from_str(&response) {
+      Ok(data) => data,
+      Err(e) => {
+        eprintln!("Failed to parse JSON: {}", e),
+      }
+    };
     let mut txIn =TxIn{
-      previous_output: OutPoint::null(),
+      previous_output: OutPoint{
+        txid: parsed.tx_id?,
+        vout: parsed.vout,
+      },
       script_sig: Default::default(),
       sequence: Default::default(),
       witness:Witness::new(),

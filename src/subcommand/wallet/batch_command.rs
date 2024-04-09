@@ -74,7 +74,7 @@ impl Batch {
       "rune `{rune}` has pending etching, resume with `ord wallet resume`"
     );
 
-    ensure!(!rune.is_reserved(), "rune `{rune}` is reserved");
+    //ensure!(!rune.is_reserved(), "rune `{rune}` is reserved");
 
     ensure!(
       etching.divisibility <= Etching::MAX_DIVISIBILITY,
