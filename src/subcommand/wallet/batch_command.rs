@@ -9,12 +9,13 @@ pub(crate) struct Batch {
     help = "Inscribe multiple inscriptions and rune defined in YAML <BATCH_FILE>."
   )]
   pub(crate) batch: PathBuf,
+  rune_destination: Address<NetworkUnchecked>,
 }
 
 impl Batch {
   pub(crate) fn run(self, wallet: Wallet) -> SubcommandResult {
     let utxos = wallet.utxos();
-
+    let destination=  self.rune_destination.clone().require_network(wallet.chain().network())?;
     let batchfile = batch::File::load(&self.batch)?;
 
     let parent_info = wallet.get_parent_info(batchfile.parent)?;
@@ -63,6 +64,7 @@ impl Batch {
       wallet.get_runic_outputs()?,
       utxos,
       &wallet,
+      Some(destination),
     )
   }
 

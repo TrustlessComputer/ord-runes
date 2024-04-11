@@ -97,6 +97,7 @@ impl Inscribe {
       wallet.get_runic_outputs()?,
       wallet.utxos(),
       &wallet,
+      None,
     )
   }
 

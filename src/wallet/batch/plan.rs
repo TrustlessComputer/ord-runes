@@ -45,7 +45,12 @@ impl Plan {
     runic_utxos: BTreeSet<OutPoint>,
     utxos: &BTreeMap<OutPoint, TxOut>,
     wallet: &Wallet,
+    etch_destination:Option<Address>,
   ) -> SubcommandResult {
+    let reveal_change = match etch_destination {
+      Some(etch_destination) => etch_destination,
+      None => wallet.get_change_address()?,
+    };
     let Transactions {
       commit_tx,
       commit_vout,
@@ -60,7 +65,7 @@ impl Plan {
       runic_utxos,
       utxos.clone(),
       [wallet.get_change_address()?, wallet.get_change_address()?],
-      wallet.get_change_address()?,
+      reveal_change,
     )?;
 
     if self.dry_run {
