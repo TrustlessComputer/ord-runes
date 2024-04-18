@@ -8,6 +8,7 @@ use {
 pub mod balance;
 mod batch_command;
 mod batch_check_command;
+mod batch_check_rune_name;
 pub mod cardinals;
 pub mod create;
 pub mod dump;
@@ -47,8 +48,10 @@ pub(crate) enum Subcommand {
   Batch(batch_command::Batch),
   #[command(about = "List unspent cardinal outputs in wallet")]
   Cardinals,
-  #[command(about = "Check runes info")]
+  #[command(about = "Check rune info")]
   BatchCheck(batch_check_command::BatchCheck),
+  #[command(about = "Check rune name")]
+  BatchCheckRuneName(batch_check_rune_name::BatchCheckRuneName),
   #[command(about = "Create new wallet")]
   Create(create::Create),
   #[command(about = "Dump wallet descriptors")]
@@ -105,6 +108,7 @@ impl WalletCommand {
       Subcommand::Cardinals => cardinals::run(wallet),
       Subcommand::Create(_) | Subcommand::Restore(_) => unreachable!(),
       Subcommand::BatchCheck(check) => check.run(wallet),
+      Subcommand::BatchCheckRuneName(check) => check.run(wallet),
       Subcommand::Dump => dump::run(wallet),
       Subcommand::Inscribe(inscribe) => inscribe.run(wallet),
       Subcommand::Inscriptions => inscriptions::run(wallet),
