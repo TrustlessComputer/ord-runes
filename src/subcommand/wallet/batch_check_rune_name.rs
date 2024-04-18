@@ -2,21 +2,15 @@ use super::*;
 
 #[derive(Debug, Parser)]
 pub(crate) struct BatchCheckRuneName {
-  #[command(flatten)]
-  shared: SharedArgs,
-  #[arg(
-    long,
-    help = "Inscribe multiple inscriptions and rune defined in YAML <BATCH_FILE>."
-  )]
-  pub(crate) batch: PathBuf,
+
   #[clap(long, help = "Name <RUNE>. May contain `.` or `•`as spacers.")]
   rune: SpacedRune,
-
   rune_destination: Address<NetworkUnchecked>,
 }
 
 impl BatchCheckRuneName {
   pub(crate) fn run(self, wallet: Wallet) -> SubcommandResult {
+    let _destination=  self.rune_destination.clone().require_network(wallet.chain().network())?;
     let rune = self.rune.rune;
     Self::check_etching_rune_name(&wallet, rune)?;
     Ok(Some(Box::new("Success")))
