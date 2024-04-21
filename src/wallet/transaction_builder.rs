@@ -290,16 +290,16 @@ impl TransactionBuilder {
 
   fn add_value(mut self) -> Result<Self> {
     let estimated_fee = self.estimate_fee();
-
+    println!("estimated_fee {:?}",estimated_fee);
     let min_value = match self.target {
       Target::Postage => self.outputs.last().unwrap().0.script_pubkey().dust_value(),
       Target::Value(value) | Target::ExactPostage(value) => value,
     };
-
+    println!("min_value {:?}",min_value);
     let total = min_value
       .checked_add(estimated_fee)
       .ok_or(Error::ValueOverflow)?;
-
+    println!("total {:?}",total);
     if let Some(mut deficit) = total.checked_sub(self.outputs.last().unwrap().1) {
       while deficit > Amount::ZERO {
         let additional_fee = self.fee_rate.fee(Self::ADDITIONAL_INPUT_VBYTES);
@@ -309,7 +309,8 @@ impl TransactionBuilder {
           .ok_or(Error::ValueOverflow)?;
 
         let (utxo, value) = self.select_cardinal_utxo(needed.to_sat(), false)?;
-
+        println!("additional_fee {:?}",additional_fee);
+        println!("value {:?}",value);
         let benefit = value
           .checked_sub(additional_fee)
           .ok_or(Error::NotEnoughCardinalUtxos)?;
